@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ride Sentinel – Control Centre</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0a1220;--card:#0f1b2d;--card2:#13233a;--tx:#e6eef8;--mu:#7f93ab;--ln:#1d2e45;--ac:#14d8a0;--s0:#14d8a0;--s1:#f5b301;--s2:#f0762e;--s3:#ff4757;--map:#0b1626}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3f8;--card:#fff;--card2:#f1f5fa;--tx:#14202e;--mu:#5d6f85;--ln:#dde5ee;--ac:#0b9c75;--s0:#0b9c75;--s1:#c98f00;--s2:#e0580c;--s3:#d62839;--map:#e6edf5}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.lb{font:600 10.5px/1.4 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.lb.g{color:var(--ac)}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--ln)}
+.logo{font-weight:800;font-size:20px;letter-spacing:.02em}.logo b{color:var(--ac)}
+.hr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;border:1px solid var(--ln);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:none;color:var(--tx);padding:8px 12px;cursor:pointer;font:inherit}
+.seg button.on{background:var(--ac);color:#04231a;font-weight:700}
+.btn{border:1px solid var(--ln);background:var(--card);color:var(--tx);padding:8px 13px;border-radius:8px;cursor:pointer;font:600 12px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.btn.go{background:var(--ac);color:#04231a;border-color:var(--ac)}
+.btn.warn{border-color:var(--s1);color:var(--s1)}
+.btn.red{background:var(--s3);border-color:var(--s3);color:#fff}
+.live{display:flex;align-items:center;gap:7px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ac);display:inline-block;flex:none}
+@keyframes pulse{50%{opacity:.3}}.blink{animation:pulse 1s infinite}
+#ban{margin:14px 22px 0;padding:12px 16px;border:1px solid var(--ln);border-left:4px solid var(--s0);background:var(--card);border-radius:8px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;cursor:pointer}
+main{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;padding:16px 22px;max-width:1500px;margin:auto}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:14px}
+h2{margin:2px 0 10px;font-size:19px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+@media(max-width:1250px){.g6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.g3{grid-template-columns:1fr}}
+@media(max-width:560px){.g6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.col{display:grid;gap:14px;align-content:start;min-width:0}
+.item{display:flex;gap:10px;align-items:center;padding:9px;border-radius:9px;cursor:pointer;border:1px solid transparent}
+.item:hover,.item.sel{background:var(--card2);border-color:var(--ln)}
+.item small{color:var(--mu);display:block}
+.pill{display:inline-block;padding:2px 9px;border-radius:5px;font:700 11px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#04120d;letter-spacing:.06em}
+.c0{background:var(--s0)}.c1{background:var(--s1)}.c2{background:var(--s2)}.c3{background:var(--s3);color:#fff}
+.map svg{width:100%;display:block;background:var(--map);border-radius:8px}
+.big{font-size:40px;font-weight:700;line-height:1.1}
+.tile{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:11px}
+.tile b{display:block;font-size:15px;margin-top:2px}
+.tile small{color:var(--mu);font-size:11.5px}
+.proto{display:flex;align-items:center;margin-top:8px}
+.proto .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--ln);display:grid;place-items:center;font:600 10px ui-monospace,monospace;color:var(--mu);flex:none}
+.proto .l{flex:1;height:1px;background:var(--ln)}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--ln)}
+.row span:first-child{color:var(--mu)}
+.log{max-height:150px;overflow:auto;margin-top:6px}
+.ev{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--ln);font-size:13px}
+.ev time{color:var(--mu);font:11px ui-monospace,monospace;flex:none;width:64px;padding-top:2px}
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:700px){.acts{grid-template-columns:1fr 1fr}}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.empty{color:var(--mu);padding:10px 2px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;margin-top:8px}
+.stats b{font-size:22px;display:block}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+.foot{text-align:center;color:var(--mu);font-size:12px;padding:4px 22px 24px}
+</style></head>
+<body>
+<header>
+ <div><div class="logo">RIDE <b>SENTINEL</b></div><div class="lb">Control centre · fleet &amp; police</div></div>
+ <div class="live lb"><span class="dot blink"></span>Live monitoring · <span id="clock">--:--:--</span></div>
+ <div class="hr">
+  <div class="seg"><button id="rF" class="on">Fleet</button><button id="rP">Police</button></div>
+  <button class="btn warn" id="bF">Test fatigue</button>
+  <button class="btn warn" id="bP">Test phone</button>
+  <button class="btn red" id="bS">SOS</button>
+ </div>
+</header>
+<div id="ban"></div>
+<main>
+ <aside class="col">
+  <section class="card"><div class="lb g" id="listT">Vehicles</div><div id="list" style="margin-top:6px"></div></section>
+  <section class="card map"><div class="lb g" style="margin-bottom:8px">Live map · simulated GPS</div>
+   <svg viewBox="0 0 700 400"><path id="r0" d="M30,330 C180,300 260,120 420,150 S620,60 680,40" fill="none" stroke="var(--ln)" stroke-width="9" stroke-linecap="round"/><path id="r1" d="M40,60 C200,90 300,200 380,230 S560,330 670,350" fill="none" stroke="var(--ln)" stroke-width="9" stroke-linecap="round"/><path id="r2" d="M350,10 C340,120 360,260 330,390" fill="none" stroke="var(--ln)" stroke-width="9" stroke-linecap="round"/><g id="pins"></g></svg></section>
+ </aside>
+ <div class="col">
+  <div class="g3">
+   <section class="card" id="p1"></section>
+   <section class="card" id="p2"></section>
+   <section class="card" id="p3"></section>
+  </div>
+  <div class="g6" id="tiles"></div>
+  <div class="g3">
+   <section class="card"><div class="lb g">04 / Contextual estimate</div><h2>Distraction distance</h2><div id="dd"></div>
+    <div class="lb" style="margin-top:12px">Speed (demo control)</div><input type="range" id="spd" min="0" max="120" value="60"></section>
+   <section class="card" id="p5"></section>
+   <section class="card" id="p6"></section>
+  </div>
+  <section class="card" id="p7"></section>
+ </div>
+</main>
+<div class="foot">Demo with simulated Ride Sentinel devices. Only events and risk scores are sent – no continuous video is stored. SafeStop is a simulation and does not control real brakes.</div>
+<div id="toast"></div>
+<script>
+const ST=['SAFE','EARLY WARNING','HIGH RISK','CRITICAL'];
+const SAFE=['—','Petrol bunk, 1.2 km ahead','Highway rest area, 2.5 km ahead','Roadside parking, 800 m ahead'];
+const V=[['TN-01-AB-1234','Murugan K',0,.15,62,14,'Wife – Lakshmi'],['TN-09-CD-5521','Selvam R',1,.4,58,22,'Brother – Raj'],['TN-22-EF-9087','Anitha S',2,.3,48,10,'Fleet desk'],['TN-07-GH-3310','Karthik V',0,.7,70,18,'Father – Venkat'],['TN-14-JK-7742','Imran A',1,.8,55,26,'Wife – Fathima']].map((a,i)=>({i,id:a[0],driver:a[1],route:a[2],t:a[3],speed:a[4],base:a[5],contact:a[6],risk:a[5],stage:0,esc:false,sos:false,mode:'fatigue',ack:false,stopped:false,log:[],hist:Array(40).fill(a[5]),n:{d:0,x:0,y:0,a:0},ear:.3,sig:3,batt:96-i*7}));
+let role='F',sel=0,feed=[];
+const $=id=>document.getElementById(id),col=s=>`var(--s${s})`,clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const now=()=>new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+function log(v,text,stage){const e={t:now(),id:v.id,text,stage:stage??v.stage,i:v.i};feed.unshift(e);feed=feed.slice(0,40);v.log.unshift(e);v.log=v.log.slice(0,30)}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
+function pos(v){const p=$('r'+v.route);return p.getPointAtLength(v.t*p.getTotalLength())}
+const lossS=v=>v.risk>35?(v.risk-30)/12:0;
+function sigs(v){const r=v.risk,f=v.mode=='fatigue',p=v.mode=='phone';
+ const lv=(c,a,b)=>c>=b?2:c>=a?1:0;
+ return[
+  {t:'Eye monitoring',v:f?['NORMAL','EYES CLOSING','CLOSED','CLOSED'][lv(r,35,55)+(r>75?1:0)]:'NORMAL',l:f?lv(r,35,55):0,s:'EAR '+v.ear.toFixed(2)+' · '+(f?Math.max(0,(r-40)/15).toFixed(1):'0.0')+'s closed',ic:'◉'},
+  {t:'Drowsiness',v:['NONE','WATCH','MICROSLEEP'][f?lv(r,30,50):0],l:f?lv(r,30,50):0,s:v.n.d+' sustained events',ic:'☾'},
+  {t:'Yawning',v:['NONE','FREQUENT'][f&&r>25?1:0],l:f&&r>25?1:0,s:v.n.y+' possible yawns',ic:'◡'},
+  {t:'Head direction',v:['FORWARD','TURNING','AWAY'][(p||(f&&r>60))?lv(r,30,50):0],l:(p||(f&&r>60))?lv(r,30,50):0,s:'Head-pose estimate',ic:'↗'},
+  {t:'Mobile phone',v:p&&r>30?'DETECTED':'NOT SEEN',l:p&&r>30?2:0,s:'Phone-use detector',ic:'▯'},
+  {t:'Driver attention',v:['ATTENTIVE','DROPPING','LOST','LOST'][v.stage],l:v.stage==0?0:v.stage==1?1:2,s:'Face-based state',ic:'⚑'}]}
+function tick(){
+ V.forEach(v=>{
+  v.sig=clamp(v.sig+(Math.random()<.2?(Math.random()<.5?-1:1):0),1,4);v.batt=Math.max(5,v.batt-.02);
+  if(v.esc)v.risk=Math.min(100,v.risk+(v.sos?100:7));
+  else{v.risk+=(v.base-v.risk)*.2+(Math.random()-.5)*5;if(Math.random()<.012){v.risk+=28;v.mode=Math.random()<.5?'fatigue':'phone'}v.risk=clamp(v.risk,3,100)}
+  v.ear=clamp(.31-Math.max(0,v.risk-20)*.0028+(Math.random()-.5)*.02,.05,.34);
+  let s=v.risk<35?0:v.risk<60?1:v.risk<80?2:3;if(v.esc&&v.stage==3)s=3;
+  if(s!=v.stage){if(s>v.stage){v.n.a++;if(v.mode=='phone')v.n.x++;else{v.n.d++;if(s==1)v.n.y++}}
+   v.stage=s;log(v,v.sos&&s==3?'SOS button pressed by driver – emergency alert':['Driver attention restored','Warning stage 1 – early warning sent','Warning stage 2 – high risk, driver not responding','Warning stage 3 – SafeStop Assist activated'][s]+(s&&!v.sos?(v.mode=='phone'?' (phone distraction)':' (fatigue)'):''),s)}
+  if(v.esc&&v.stage==3){v.speed=Math.max(0,v.speed-5);if(!v.speed&&!v.stopped){v.stopped=true;log(v,'Vehicle brought to a controlled stop',0)}}
+  v.t=(v.t+v.speed*.00006)%1;v.hist.push(v.risk);v.hist.shift()
+ });render()
+}
+function gauge(v){const L=283*v.risk/100;return`<svg viewBox="0 0 160 130" style="width:190px;display:block;margin:0 auto"><circle cx="80" cy="80" r="60" fill="none" stroke="var(--ln)" stroke-width="9" stroke-dasharray="283 377" transform="rotate(135 80 80)" stroke-linecap="round"/><circle cx="80" cy="80" r="60" fill="none" stroke="${col(v.stage)}" stroke-width="9" stroke-dasharray="${L} 377" transform="rotate(135 80 80)" stroke-linecap="round"/><text x="80" y="82" text-anchor="middle" font-size="34" font-weight="700" fill="var(--tx)">${Math.round(v.risk)}</text><text x="80" y="100" text-anchor="middle" font-size="8" letter-spacing="2" fill="var(--mu)">RISK SCORE</text></svg>`}
+function twin(v){const c=col(v.stage),f=v.mode=='fatigue',away=(v.mode=='phone'&&v.risk>30)||(f&&v.risk>60),ey=f&&v.risk>35?Math.max(1,9-v.risk/10):9,yawn=f&&v.risk>25;
+ return`<svg viewBox="0 0 200 190" style="width:100%;max-height:190px"><g transform="rotate(${away?14:0} 100 100)"><ellipse cx="100" cy="78" rx="42" ry="52" fill="none" stroke="${c}" stroke-width="2"/><ellipse cx="82" cy="72" rx="9" ry="${ey}" fill="none" stroke="${c}" stroke-width="2"/><ellipse cx="118" cy="72" rx="9" ry="${ey}" fill="none" stroke="${c}" stroke-width="2"/>${yawn?`<ellipse cx="100" cy="108" rx="9" ry="9" fill="none" stroke="${c}" stroke-width="2"/>`:`<path d="M88 108 Q100 114 112 108" fill="none" stroke="${c}" stroke-width="2"/>`}</g><path d="M40 190 Q42 140 100 138 Q158 140 160 190" fill="none" stroke="${c}" stroke-width="2" opacity=".6"/></svg>`}
+function spark(v){const pts=v.hist.map((y,i)=>`${i*7.5},${50-y*.46}`).join(' ');return`<svg viewBox="0 0 292 54" style="width:100%"><polyline points="${pts}" fill="none" stroke="var(--ac)" stroke-width="2"/></svg>`}
+function acts(){return role=='F'?['📞 Call driver','👪 Notify contact','✅ Acknowledge','🔄 Resolved']:['🚓 Dispatch patrol','🚑 Ambulance','✅ Acknowledge','🔄 Resolved']}
+function act(i){const v=V[sel],m=role=='F'?['Control centre calling '+v.driver,'Alert sent to '+v.contact,'Alert acknowledged','']:['Patrol unit dispatched to vehicle location','Ambulance requested to vehicle location','Alert acknowledged by police',''];
+ if(i==3){v.esc=false;v.sos=false;v.risk=v.base;v.speed=55;v.stopped=false;v.ack=false;v.stage=0;v.mode='fatigue';log(v,'Incident marked resolved',0);toast('Resolved');render();return}
+ if(i==2)v.ack=true;log(v,m[i],v.stage);toast(m[i]);render()}
+function render(){
+ const ap=V.filter(v=>role=='F'||v.stage==3);
+ $('listT').textContent=role=='F'?'Vehicles · '+V.length+' online':'Emergency cases';
+ $('list').innerHTML=ap.length?ap.map(v=>`<div class="item ${v.i==sel?'sel':''}" data-i="${v.i}"><span class="dot ${v.stage>=2?'blink':''}" style="background:${col(v.stage)}"></span><div style="flex:1"><b>${v.id}</b><small>${v.driver} · ${Math.round(v.speed)} km/h</small></div><span class="pill c${v.stage}">${Math.round(v.risk)}</span></div>`).join(''):'<div class="empty">No emergency cases right now ✅<br>Use the test buttons on top.</div>';
+ $('pins').innerHTML=V.map(v=>{const p=pos(v);return`<g data-i="${v.i}" style="cursor:pointer"><circle cx="${p.x}" cy="${p.y}" r="${v.i==sel?15:11}" style="fill:${col(v.stage)};stroke:var(--card);stroke-width:3"/>${v.stage>=2?`<circle cx="${p.x}" cy="${p.y}" r="23" class="blink" style="fill:none;stroke:${col(v.stage)};stroke-width:3"/>`:''}</g>`}).join('');
+ const le=feed.find(e=>role=='F'||e.stage==3),b=$('ban');
+ b.style.borderLeftColor=le?col(le.stage):'var(--s0)';
+ b.innerHTML=le?`<div><div class="lb" style="color:${col(le.stage)}">Latest alert · ${ST[le.stage]}</div><b>${le.id}</b> – ${le.text}</div><div class="lb">${le.t} · tap to open</div>`:`<div><div class="lb g">System ready</div>All vehicles reporting normally.</div><div class="lb">Waiting for alerts</div>`;
+ b.dataset.i=le?le.i:sel;
+ const v=V[sel],p=pos(v),lat=(13.2-p.y/400*.18).toFixed(4),lon=(80.15+p.x/700*.2).toFixed(4),l=lossS(v),d=v.speed/3.6*l,S=sigs(v);
+ $('p1').innerHTML=`<div class="lb g">01 / Live input</div><h2>${v.driver}</h2><div style="background:var(--card2);border-radius:8px;padding:12px;min-height:150px;display:grid;align-content:center;gap:4px"><div class="lb">${v.id}</div><div class="row"><span>Face</span><b>${v.stopped?'—':'DETECTED'}</b></div><div class="row"><span>EAR</span><b>${v.ear.toFixed(2)}</b></div><div class="row"><span>Stream</span><b>Events only (no video)</b></div><div class="row"><span>Device</span><b>RS-0${101+v.i} · LTE ${'▂▄▆█'.slice(0,v.sig)}</b></div></div>`;
+ $('p2').innerHTML=`<div class="lb g">02 / Behavioural model</div><h2>Personalized digital twin</h2>${twin(v)}<div class="row"><span>Attention</span><b style="color:${col(v.stage)}">${S[5].v}</b></div>`;
+ $('p3').innerHTML=`<div class="lb g">03 / Live assessment</div><h2>Driver risk <span class="pill c${v.stage}" style="float:right;font-size:10px">${ST[v.stage]}</span></h2>${gauge(v)}<div class="proto">${[1,2,3].map((n,k)=>`<div class="n" style="${v.stage>=n?`background:${col(n)};color:#04120d;border-color:${col(n)}`:''}">0${n}</div>${k<2?'<div class="l"></div>':''}`).join('')}</div><div class="lb" style="display:flex;justify-content:space-between;margin-top:4px"><span>Early</span><span>High risk</span><span>Critical</span></div>`;
+ $('tiles').innerHTML=S.map(s=>`<div class="tile"><div style="display:flex;justify-content:space-between"><span class="lb">${s.t}</span><span class="dot" style="background:${col(s.l==0?0:s.l==1?1:3)}"></span></div><b>${s.v}</b><small>${s.s}</small></div>`).join('');
+ $('dd').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:end"><div class="big" style="color:var(--ac)">${d.toFixed(1)}<small style="font-size:18px"> m</small></div><div style="text-align:right"><b style="font-size:20px">${l.toFixed(1)}s</b><div class="lb">Looking away</div></div></div><div class="lb" style="margin-top:6px">Estimated distance while distracted · ${Math.round(v.speed)} km/h</div>`;
+ const ss=v.stage==3?(v.stopped?'STOPPED':'SLOWING DOWN'):'STANDBY';
+ $('p5').innerHTML=`<div style="display:flex;justify-content:space-between"><span class="lb g">05 / SafeStop</span><span class="lb" style="color:var(--s3)">Simulation only</span></div><h2>SafeStop assist</h2><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="lb">Simulation state</div><b style="color:${v.stage==3?'var(--s3)':'var(--tx)'}">${ss}</b></div><div class="big">${Math.round(v.speed)}<small style="font-size:14px;color:var(--mu)"> km/h</small></div></div><div class="row" style="margin-top:8px"><span>Warning stage</span><b>${v.stage}/3</b></div><div class="row"><span>Driver response</span><b>${v.stage==3?'No response':v.stage?'Awaiting':'Normal'}</b></div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn red" style="flex:1" data-s="1">Simulate SafeStop</button><button class="btn" data-s="0">Reset</button></div>`;
+ $('p6').innerHTML=`<div style="display:flex;justify-content:space-between"><span class="lb g">06 / Session record</span><span class="lb">${v.id.slice(-4)}</span></div><h2>Trip analytics</h2>${spark(v)}<div class="stats"><div><b>${v.n.d}</b><span class="lb">Drowsy</span></div><div><b>${v.n.x}</b><span class="lb">Distract</span></div><div><b>${v.n.y}</b><span class="lb">Yawns</span></div><div><b>${v.n.a}</b><span class="lb">Alerts</span></div></div><div class="lb" style="margin-top:8px">Recent events</div><div class="log">${v.log.length?v.log.map(e=>`<div class="ev"><time>${e.t}</time><div>${e.text}</div></div>`).join(''):'<div class="empty">No events yet.</div>'}</div>`;
+ $('p7').innerHTML=`<div class="lb g">07 / ${role=='F'?'Fleet manager':'Police'} actions</div><div style="display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:6px"><span><span class="lb">GPS </span><b>${lat}°N, ${lon}°E</b></span><span><span class="lb">Contact </span><b>${v.contact}</b></span><span><span class="lb">Nearest safe stop </span><b>${SAFE[v.stage]}</b></span>${v.ack?'<span class="pill c0">ACKNOWLEDGED</span>':''}</div><div class="acts">${acts().map((a,i)=>`<button class="btn ${i==0?'go':''}" data-a="${i}">${a}</button>`).join('')}</div>`;
+}
+function start(mode){const c=V.filter(v=>!v.esc),v=c[Math.floor(Math.random()*c.length)];if(!v)return;v.esc=true;v.mode=mode;v.sos=mode=='sos';v.risk=mode=='sos'?100:Math.max(v.risk,40);sel=v.i;$('spd').value=v.speed;toast(mode=='sos'?'SOS received from '+v.id:'Test started on '+v.id);render()}
+document.addEventListener('click',e=>{
+ const a=e.target.closest('[data-a]');if(a){act(+a.dataset.a);return}
+ const s=e.target.closest('[data-s]');if(s){const v=V[sel];if(s.dataset.s=='1'){v.esc=true;v.risk=95;v.mode='fatigue';toast('SafeStop simulation started')}else act(3);render();return}
+ const i=e.target.closest('[data-i]');if(i){sel=+i.dataset.i;$('spd').value=V[sel].speed;render()}
+});
+$('spd').oninput=e=>{V[sel].speed=+e.target.value;render()};
+$('rF').onclick=()=>{role='F';$('rF').className='on';$('rP').className='';render()};
+$('rP').onclick=()=>{role='P';$('rP').className='on';$('rF').className='';render()};
+$('bF').onclick=()=>start('fatigue');$('bP').onclick=()=>start('phone');$('bS').onclick=()=>start('sos');
+setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString([], {hour12:false}),1000);
+render();setInterval(tick,1500);
+</script></body></html>
